@@ -43,7 +43,7 @@ public class MotosController {
       model.addAttribute("brands", brands);  //インスタンスと同じ名前のキー名でmodelに情報をセットしている
       model.addAttribute("motos", motos);
 
-      log.info("motos: {}", motos);  //ログ出力する
+      log.debug("motos: {}", motos);  //ログ出力する
 
       return "moto_list";
     }
