@@ -1,0 +1,11 @@
+#ログ出力の設定 指定したログレベルより優先度の高いものが出力される
+logging:
+  level:
+    root: info
+  file:
+    name: app.log
+#ファイルを切り替える
+  logback:
+    rollingpolicy:
+      max-file-size: 1MB
+  

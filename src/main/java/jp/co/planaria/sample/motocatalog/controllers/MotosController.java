@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import jp.co.planaria.sample.bean.Brand;
 import jp.co.planaria.sample.bean.Motorcycle;
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
+@Slf4j  //ログ部品を使えるようになる
 public class MotosController {
 
   @RequestMapping("/hello")
@@ -40,6 +42,8 @@ public class MotosController {
 
       model.addAttribute("brands", brands);  //インスタンスと同じ名前のキー名でmodelに情報をセットしている
       model.addAttribute("motos", motos);
+
+      log.debug("motos: {}", motos);  //ログ出力する
 
       return "moto_list";
     }
