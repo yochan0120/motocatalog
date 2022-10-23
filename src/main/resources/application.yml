@@ -1,4 +1,13 @@
-#ログ出力の設定 指定したログレベルより優先度の高いものが出力される
+spring:
+  datasource:
+    driverClassName : com.mysql.jdbc.Driver
+    url: "jdbc:mysql://localhost:3307/motocatalogdb"
+    username : develop
+    password : develop
+  sql:
+    init:
+      mode: always
+      encoding: UTF-8
 logging:
   level:
     root: info
@@ -8,4 +17,6 @@ logging:
   logback:
     rollingpolicy:
       max-file-size: 1MB
-  
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
