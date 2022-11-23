@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import jp.co.planaria.sample.motocatalog.beans.Brand;
 import jp.co.planaria.sample.motocatalog.beans.Motorcycle;
-import jp.co.planaria.sample.motocatalog.beans.SearchCondition;
+import jp.co.planaria.sample.motocatalog.beans.SearchForm;
 import jp.co.planaria.sample.motocatalog.services.MotosService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,7 +37,7 @@ public class MotosController {
 
       //バイク
       List<Motorcycle> motos = new ArrayList<>();
-      SearchCondition condition = new SearchCondition();
+      SearchForm condition = new SearchForm();
       motos = service.getMotos(condition);
     
       model.addAttribute("brands", brands);  //インスタンスと同じ名前のキー名でmodelに情報をセットしている
