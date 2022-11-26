@@ -29,22 +29,52 @@ public class MotosController {
       return "test";
     }
 
+    /**
+     * バイク一覧を検索する
+     * @param searchForm 検索条件
+     * @param model Mpdel
+     * @return 遷移先
+     */
     @GetMapping("/motos")
-    public String motos(Model model){
-      //ブランド
-      List<Brand> brands = new ArrayList<>();
-      brands = service.getBrands();
+    public String motos(SearchForm searchForm,Model model){
+      log.info("検索条件: {}", searchForm);
+      // ブランドリストを準備
+      this.setBrands(model);
 
-      //バイク
+      // バイク
       List<Motorcycle> motos = new ArrayList<>();
-      SearchForm condition = new SearchForm();
-      motos = service.getMotos(condition);
+      motos = service.getMotos(searchForm);
     
-      model.addAttribute("brands", brands);  //インスタンスと同じ名前のキー名でmodelに情報をセットしている
       model.addAttribute("motos", motos);
 
       log.debug("motos: {}", motos);  //ログ出力する
 
       return "moto_list";
+    }
+    /**
+     * 検索条件をクリアする
+     * @param searchForm 検索条件
+     * @param model Model
+     * @return 遷移先
+     */
+    @GetMapping("/motos/reset")
+    public String reset(SearchForm searchForm, Model model){
+      // ブランドリストを準備
+      this.setBrands(model);
+
+      // 剣削除件のクリア
+      searchForm = new SearchForm();
+      return "moto_list";
+    }
+
+    /**
+     * ブランドリストをModelにセットする
+     * @param model Model
+     */
+    private void setBrands(Model model){
+      // ブランド
+      List<Brand> brands = new ArrayList<>();
+      brands = service.getBrands();
+      model.addAttribute("brands", brands);
     }
   }
