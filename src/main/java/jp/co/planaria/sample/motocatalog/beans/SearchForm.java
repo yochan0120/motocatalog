@@ -1,5 +1,7 @@
 package jp.co.planaria.sample.motocatalog.beans;
 
+import javax.validation.constraints.Size;
+
 import lombok.Data;
 
 //検索条件
@@ -8,5 +10,6 @@ public class SearchForm {
   //ブランドID
   private String brandId;
   //キーワード
+  @Size(min = 2, max = 10)
   private String keyword;
 }
