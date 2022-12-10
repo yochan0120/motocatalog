@@ -11,34 +11,33 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Motorcycle {
 
-  //バイク番号
+  // バイク番号
   private Integer motoNo;
-  //バイク名
+  // バイク名
   private String motoName;
-  //シート高
+  // シート高
   private Integer seatHeight;
-  //シリンダー
+  // シリンダー
   private Integer cylinder;
-  //冷却方式
+  // 冷却方式
   private String cooling;
-  //価格
+  // 価格
   private Integer price;
-  //コメント
+  // コメント
   private String comment;
-  //ブランドID BrandクラスのIDを呼び出す
+  // ブランドID BrandクラスのIDを呼び出す
   private Brand brand;
-  //バージョン
+  // バージョン
   private Integer version;
-  //登録日時
+  // 登録日時
   private LocalDateTime insDt;
-  //更新日時
+  // 更新日時
   private LocalDateTime updDt;
 
-  // public void setMotoNo(String motoNo){  //motoNoというフィールドに値をセットするメソッド
-  //   this.motoNo = motoNo;
+  // public void setMotoNo(String motoNo){ //motoNoというフィールドに値をセットするメソッド
+  // this.motoNo = motoNo;
   // }
-  // public String getMotoNo(){  //motoNoから値を取り出すメソッド
-  //   return this.motoNo;
+  // public String getMotoNo(){ //motoNoから値を取り出すメソッド
+  // return this.motoNo;
   // }
 }
-
