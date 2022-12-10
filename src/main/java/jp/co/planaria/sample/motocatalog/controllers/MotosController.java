@@ -70,9 +70,16 @@ public class MotosController {
       // ブランドリストを準備
       this.setBrands(model);
 
-      // 剣削除件のクリア
+      // 検索条件のクリア
       searchForm = new SearchForm();
       return "moto_list";
+    }
+
+    @GetMapping("/motos/{motoNo}")
+    public String initUpdate(Model model) {
+      // ブランドリストを準備
+      this.setBrands(model);
+      return "moto";
     }
 
     /**
