@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import jp.co.planaria.sample.motocatalog.beans.Brand;
 import jp.co.planaria.sample.motocatalog.beans.Motorcycle;
@@ -32,7 +33,7 @@ public class MotosService {
   public List<Brand> getBrands() {
     return brandMapper.selectAll();
   }
-
+@Transactional
 /**
  * バイク情報を更新する
  * @param moto バイク情報
@@ -40,9 +41,14 @@ public class MotosService {
  */
   public int save(Motorcycle moto) {
     int cnt = motorcycleMapper.update(moto);
+    // 更新されなかった場合、更新されたか削除されたため楽観的排他エラーとする
     if(cnt == 0) {
       throw new OptimisticLockingFailureException("楽観的排他エラー");
     }
-    return motorcycleMapper.update(moto);
+    // 2件以上更新は想定外（SQLの不備の可能性）
+    if (cnt > 1) {
+      throw new RuntimeException("2件以上更新されました。");
+    }
+    return cnt;
   }
 }
