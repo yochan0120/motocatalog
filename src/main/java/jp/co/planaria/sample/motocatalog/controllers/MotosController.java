@@ -6,9 +6,11 @@ import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -17,7 +19,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import ch.qos.logback.core.joran.util.beans.BeanUtil;
 import jp.co.planaria.sample.motocatalog.beans.Brand;
 import jp.co.planaria.sample.motocatalog.beans.Motorcycle;
 import jp.co.planaria.sample.motocatalog.beans.SearchForm;
@@ -100,17 +101,24 @@ public class MotosController {
     }
 
     @PostMapping("/motos/save")
-    public String save(@ModelAttribute MotoForm motoForm){
-      log.info("motoForm: {}", motoForm);
-      Motorcycle moto = new Motorcycle();
-      // 検索結果を入力内容に詰め替える
-      BeanUtils.copyProperties(motoForm, moto);
-      // 情報を更新する
-      int cnt = service.save(moto);
-      log.info("{}件更新", cnt);
+    public String save(@ModelAttribute MotoForm motoForm, BindingResult result){
+      try {
+        log.info("motoForm:{}", motoForm);
+        Motorcycle moto = new Motorcycle();
+        // 検索結果を入力内容に詰め替える
+        BeanUtils.copyProperties(motoForm, moto);
+        // 情報を更新する
+        int cnt = service.save(moto);
+        log.info("{}件更新", cnt);
+  
+        // リダイレクト（一覧に遷移）
+        return "redirect:/motos";
 
-      // リダイレクト（一覧に遷移）
-      return "redirect:/motos";
+      } catch (OptimisticLockingFailureException e) {
+        result.addError(new ObjectError("global", e.getMessage()));
+        return "moto";
+
+      }
     }
 
     /**
