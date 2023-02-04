@@ -27,11 +27,11 @@ public class MotosService {
   @Autowired
   BrandMapper brandMapper;
 
-  public List<Motorcycle> getMotos(SearchForm condition){
+  public List<Motorcycle> getMotos(SearchForm condition) {
     return motorcycleMapper.selectByCondition(condition);
   }
 
-  public Motorcycle getMotos(int motoNo){
+  public Motorcycle getMotos(int motoNo) {
     return motorcycleMapper.selectByPK(motoNo);
   }
 
@@ -40,24 +40,63 @@ public class MotosService {
   }
 
   /**
+   * バイク情報を保存する。
+   * @param moto バイク情報
+   * @return 保存件数
+   */
+  public int save(Motorcycle moto) {
+    if (moto.getMotoNo() == null) {
+      // バイク番号がnullなら登録 自分のaddメソッド呼び出して、それぞれの戻り値を返す
+      return this.add(moto);
+    } else {
+      // そうでなければ更新 自分のupdateメソッド呼び出して、それぞれの戻り値を返す
+      return this.update(moto);
+    }
+  
+  }
+
+  /**
    * バイク情報を更新する
+   * 
    * @param moto バイク情報
    * @return 更新件数
    */
   @Transactional
-  public int save(Motorcycle moto) {
+  private int update(Motorcycle moto) {
     int cnt = motorcycleMapper.update(moto);
     // 更新できなかった場合、更新されたか削除されたため楽観的排他エラーとする
-    if (cnt == 0){
+    if (cnt == 0) {
       throw new OptimisticLockingFailureException(
-        messageSource.getMessage("error.OptimisticLockingFailure",
-        null, Locale.JAPANESE));
+          messageSource.getMessage("error.OptimisticLockingFailure",
+              null, Locale.JAPANESE));
     }
     // 2件以上更新が想定外（SQLの不備の可能性）
-    if (cnt > 1){
+    if (cnt > 1) {
       throw new RuntimeException(
-        messageSource.getMessage("error.Runtime",
-        new String[] {"2件以上更新されました。"}, Locale.JAPANESE));
+          messageSource.getMessage("error.Runtime",
+              new String[] { "2件以上更新されました。" }, Locale.JAPANESE));
+    }
+    return cnt;
+  }
+
+  /**
+   * バイク情報を登録する
+   * 
+   * @param moto バイク情報
+   * @return 登録件数
+   */
+  @Transactional
+  private int add(Motorcycle moto) {
+    // 新しいバイク番号を発行して使う
+    Integer motoNo = motorcycleMapper.selectNewMotoNo();
+    moto.setMotoNo(motoNo);
+    // バイク情報を登録
+    int cnt = motorcycleMapper.insert(moto);
+    // 登録できなかった場合、登録されたか削除されたため楽観的排他エラーとする
+    if (cnt == 0) {
+      throw new RuntimeException(
+          messageSource.getMessage("error.Runtime",
+              new String[] { "登録に失敗しました。" }, Locale.JAPANESE));
     }
     return cnt;
   }
