@@ -57,7 +57,6 @@ public class MotosService {
 
   /**
    * バイク情報を更新する
-   * 
    * @param moto バイク情報
    * @return 更新件数
    */
@@ -68,20 +67,19 @@ public class MotosService {
     if (cnt == 0) {
       throw new OptimisticLockingFailureException(
           messageSource.getMessage("error.OptimisticLockingFailure",
-              null, Locale.JAPANESE));
+          null, Locale.JAPANESE));
     }
     // 2件以上更新が想定外（SQLの不備の可能性）
     if (cnt > 1) {
       throw new RuntimeException(
           messageSource.getMessage("error.Runtime",
-              new String[] { "2件以上更新されました。" }, Locale.JAPANESE));
+          new String[] { "2件以上更新されました。" }, Locale.JAPANESE));
     }
     return cnt;
   }
 
   /**
    * バイク情報を登録する
-   * 
    * @param moto バイク情報
    * @return 登録件数
    */
@@ -96,7 +94,29 @@ public class MotosService {
     if (cnt == 0) {
       throw new RuntimeException(
           messageSource.getMessage("error.Runtime",
-              new String[] { "登録に失敗しました。" }, Locale.JAPANESE));
+          new String[] { "登録に失敗しました。" }, Locale.JAPANESE));
+    }
+    return cnt;
+  }
+  /**
+   * バイク情報を削除する
+   * @param moto バイク情報
+   * @return 削除件数
+   */
+  @Transactional
+  public int delete(Motorcycle moto) {
+    int cnt = motorcycleMapper.delete(moto);
+    // 削除できなかった場合、削除されたか削除されたため楽観的排他エラーとする
+    if (cnt == 0) {
+      throw new OptimisticLockingFailureException(
+          messageSource.getMessage("error.OptimisticLockingFailure",
+          null, Locale.JAPANESE));
+    }
+    // 2件以上更新が想定外（SQLの不備の可能性）
+    if (cnt > 1) {
+      throw new RuntimeException(
+          messageSource.getMessage("error.Runtime",
+          new String[] { "2件以上削除されました。" }, Locale.JAPANESE));
     }
     return cnt;
   }
