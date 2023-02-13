@@ -3,7 +3,6 @@ package jp.co.planaria.sample.motocatalog.controllers;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -18,8 +17,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import ch.qos.logback.core.joran.util.beans.BeanUtil;
 import jp.co.planaria.sample.motocatalog.beans.Brand;
 import jp.co.planaria.sample.motocatalog.beans.Motorcycle;
 import jp.co.planaria.sample.motocatalog.beans.SearchForm;
@@ -101,8 +98,30 @@ public class MotosController {
       return "moto";
     }
 
+        /**
+     * 登録画面の初期表示
+     * @param motoForm 入力内容
+     * @param model Model
+     * @return 遷移先
+     */
+    @GetMapping("/motos/new")
+    public String initNew(@ModelAttribute MotoForm motoForm, Model model) {
+      // ブランドリストを準備
+      this.setBrands(model);
+
+      return "moto";
+    }
+
+    /**
+     * バイク情報を保存する。
+     * @param motoForm 入力内容
+     * @param result BindingResult
+    public String save(@ModelAttribute MotoForm motoForm, BindingResult result, Model model){
+     * @param model 
+     * @return 遷移先
+     */
     @PostMapping("/motos/save")
-    public String save(@ModelAttribute MotoForm motoForm, BindingResult result){
+    public String save(@ModelAttribute MotoForm motoForm, BindingResult result, Model model){
       try {
         log.info("motoForm: {}", motoForm);
         Motorcycle moto = new Motorcycle();
@@ -116,11 +135,12 @@ public class MotosController {
         return "redirect:/motos";
 
       } catch (OptimisticLockingFailureException e) {
+           // ブランドリストを準備
+        this.setBrands(model);
         result.addError(new ObjectError("global", e.getMessage()));
         return "moto";
 
       }
-
     }
 
     /**
@@ -132,5 +152,36 @@ public class MotosController {
       List<Brand> brands = new ArrayList<>();
       brands = service.getBrands();
       model.addAttribute("brands", brands);
+    }
+
+    /**
+     * バイク情報を削除する。
+     * @param motoForm 入力内容
+     * @param result BindingResult
+    public String save(@ModelAttribute MotoForm motoForm, BindingResult result, Model model){
+     * @param model 
+     * @return 遷移先
+     */
+    @PostMapping("/motos/delete")
+    public String delete(@ModelAttribute MotoForm motoForm, BindingResult result, Model model){
+      try {
+        log.info("motoForm: {}", motoForm);
+        Motorcycle moto = new Motorcycle();
+        // 検索結果を入力内容に詰め替える
+        BeanUtils.copyProperties(motoForm, moto);
+        // 情報を削除する
+        int cnt = service.delete(moto);
+        log.info("{}件削除", cnt);
+  
+        // リダイレクト（一覧に遷移）
+        return "redirect:/motos";
+
+      } catch (OptimisticLockingFailureException e) {
+           // ブランドリストを準備
+        this.setBrands(model);
+        result.addError(new ObjectError("global", e.getMessage()));
+        return "moto";
+
+      }
     }
   }
