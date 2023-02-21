@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import jp.co.planaria.sample.motocatalog.beans.Brand;
 import jp.co.planaria.sample.motocatalog.beans.Motorcycle;
-import jp.co.planaria.sample.motocatalog.beans.SearchForm;
 import jp.co.planaria.sample.motocatalog.forms.MotoForm;
+import jp.co.planaria.sample.motocatalog.forms.SearchForm;
 import jp.co.planaria.sample.motocatalog.services.MotosService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -121,9 +121,15 @@ public class MotosController {
      * @return 遷移先
      */
     @PostMapping("/motos/save")
-    public String save(@ModelAttribute MotoForm motoForm, BindingResult result, Model model){
+    public String save(@Validated MotoForm motoForm, BindingResult result, Model model){
+      // ブランドリストを準備
+      this.setBrands(model);
       try {
         log.info("motoForm: {}", motoForm);
+        if(result.hasErrors()) {
+          // 入力チェックでエラーがある場合
+          return "moto";
+        }
         Motorcycle moto = new Motorcycle();
         // 検索結果を入力内容に詰め替える
         BeanUtils.copyProperties(motoForm, moto);
@@ -135,8 +141,6 @@ public class MotosController {
         return "redirect:/motos";
 
       } catch (OptimisticLockingFailureException e) {
-           // ブランドリストを準備
-        this.setBrands(model);
         result.addError(new ObjectError("global", e.getMessage()));
         return "moto";
 
